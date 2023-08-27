@@ -26,10 +26,10 @@ async function run() {
     const usersCollection = client.db("classesDB").collection("users");
     const classesCollection = client.db("classesDB").collection("classes");
 
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
+
+    
+   
+   
     // user related apis
     app.post("/users", async (req, res) => {
       const user = req.body;
@@ -47,6 +47,14 @@ async function run() {
       res.send(result);
     });
 
+
+    app.get('/users/admin/:email', async(req,res)=>{
+      const email = req.params.email;
+      const query = {email:email};
+      const user = await usersCollection.findOne(query);
+      const result = {admin: user?.role === 'admin'};
+      res.send(result);
+    })
     app.patch("/users/admin/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
@@ -119,7 +127,10 @@ async function run() {
       const result = await classesCollection.updateOne(filter, updateDoc,option);
       res.send(result);
     });
-
+    await client.db("admin").command({ ping: 1 });
+    console.log(
+      "Pinged your deployment. You successfully connected to MongoDB!"
+    );
   
   } finally {
     // await client.close();
